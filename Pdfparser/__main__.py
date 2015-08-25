@@ -1,6 +1,7 @@
 __author__ = 'Randy'
 
 # coding=utf-8
+import threading
 import urllib
 import re
 
@@ -42,12 +43,9 @@ def get_pdf_link(start_idx, end_idx):
     return pdf_link_list
 
 
-def save_pdf_file():
-    pdf_link_file = open("download.txt", "a+")
-
-    start_idx = 1
-    # end_idx = 12994
-    end_idx = 11
+def save_pdf_file(thread_idx, start_idx, end_idx):
+    pdf_down_file = "download" + str(thread_idx) + ".txt"
+    pdf_link_file = open(pdf_down_file, "a+")
 
     pdf_link_list = get_pdf_link(start_idx, end_idx)
 
@@ -60,5 +58,41 @@ def save_pdf_file():
     return 0
 
 
+def main():
+    pdf_count = 12994
+    base_count = 1000
+
+    pdf_thread_list = []
+
+    mod_count = pdf_count % base_count
+    quo_count = pdf_count / base_count
+
+    if mod_count != 0:
+        quo_count += 1
+
+    count = 1
+    str_idx = 1
+    end_idx = base_count
+    for i in range(1, quo_count+1):
+        print i, str_idx, end_idx
+
+        if count != quo_count-1:
+            str_idx += base_count
+            end_idx += base_count
+        else:
+            str_idx += base_count
+            end_idx += mod_count
+
+        count += 1
+
+        pdf_thread = threading.Thread(target=save_pdf_file, args=(i,str_idx,end_idx))
+        pdf_thread.start()
+        pdf_thread_list.append(pdf_thread)
+
+    for idx in range(1,quo_count+1):
+        pdf_thread = pdf_thread_list[idx]
+        pdf_thread.join()
+
+
 if __name__ == '__main__':
-    save_pdf_file()
+    main()
