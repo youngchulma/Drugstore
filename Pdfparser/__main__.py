@@ -21,7 +21,7 @@ def reg_link(content_str):
     reg_content = re.compile(reg_exp)
     down_link = re.findall(reg_content, content_str)
 
-    if len(down_link) > 0:
+    if len(down_link):
         # return the first item from list
         return down_link[0]
 
@@ -38,7 +38,6 @@ def get_pdf_link(start_idx, end_idx):
         pdf_link_list.append(pdf_link)
 
         print pdf_link
-        print len(pdf_link_list)
 
     return pdf_link_list
 
@@ -49,7 +48,7 @@ def save_pdf_file(thread_idx, start_idx, end_idx):
 
     pdf_link_list = get_pdf_link(start_idx, end_idx)
 
-    for idx in range(start_idx-1, end_idx-1):
+    for idx in range(0, len(pdf_link_list)):
         pdf_link_file.write(pdf_link_list.__getitem__(idx).__str__()+'\n')
 
     pdf_link_file.flush()
@@ -85,11 +84,11 @@ def main():
 
         count += 1
 
-        pdf_thread = threading.Thread(target=save_pdf_file, args=(i,str_idx,end_idx))
+        pdf_thread = threading.Thread(target=save_pdf_file, args=(i, str_idx, end_idx))
         pdf_thread.start()
         pdf_thread_list.append(pdf_thread)
 
-    for idx in range(1,quo_count+1):
+    for idx in range(0, len(pdf_thread_list)):
         pdf_thread = pdf_thread_list[idx]
         pdf_thread.join()
 
